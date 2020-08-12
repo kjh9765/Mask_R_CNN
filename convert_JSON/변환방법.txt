@@ -1,0 +1,6 @@
+txt 파일들을 personal_info 폴더에 넣고
+이미지파일들은 add txt 폴더에 넣는다.
+
+git bash 실행해서 python main.py 입력하고 python txt2json.py 입력
+
+끝
