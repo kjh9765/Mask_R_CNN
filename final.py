@@ -37,13 +37,13 @@ import matplotlib.pyplot as plt
 
 #pip install tensorflow-gpu==1.15.0
 #pip install keras==2.2.5
-# python final.py train --dataset=C:/Users/jaehoon/Desktop/medicine_project/dataset --weight=coco
+# python final.py train --dataset=/home/ubuntu/Mask_R_CNN/dataset --weight=coco
 # tensorboard --logdir=C:/Users/jaehoon/Desktop/medicine_project/logs
 
 
 
 # Root directory of the project
-ROOT_DIR = os.path.abspath("C:/Users/jaehoon/Desktop/medicine_project")
+ROOT_DIR = os.path.abspath("/home/ubuntu/Mask_R_CNN")
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
@@ -72,6 +72,7 @@ class CustomConfig(Config):
     # We use a GPU with 12GB memory, which can fit two images.
     # Adjust down if you use a smaller GPU.
     IMAGES_PER_GPU = 1
+    GPU_COUNT = 4
 
     # Number of classes (including background)
     NUM_CLASSES = 1 + 166  # Background + toy
@@ -278,7 +279,7 @@ class CustomDataset(utils.Dataset):
         self.add_class("object", 165, "198")
         self.add_class("object", 166, "199")
 
-        dataset_dir = CUSTOM_DIR = "C:/Users/jaehoon/Desktop/medicine_project/dataset"
+        dataset_dir = CUSTOM_DIR = "/home/ubuntu/Mask_R_CNN/dataset"
         # Train or validation dataset?
         assert subset in ["train", "val"]
         dataset_dir = os.path.join(dataset_dir, subset)
@@ -421,19 +422,17 @@ def train(model):
     # no need to train all layers, just the heads should do it.
     print("Training network heads")
 
-    MODEL_DIR = 'C:/Users/jaehoon/Desktop/medicine_project/logs'
+    MODEL_DIR = '/home/ubuntu/Mask_R_CNN/logs'
 
     model_inference = modellib.MaskRCNN(mode="inference", config=config, model_dir=MODEL_DIR)
 
-    mean_average_precision_callback = modellib.MeanAveragePrecisionCallback(model, model_inference, dataset=dataset_val,
-                                                                            calculate_map_at_every_X_epoch=200, verbose=1)
-
+   
 
     model.train(dataset_train, dataset_val,
                 learning_rate=config.LEARNING_RATE,
                 epochs=10000,
                 layers='3+',
-                custom_callbacks=[mean_average_precision_callback,
+                custom_callbacks=[
                                   keras.callbacks.TensorBoard(log_dir=MODEL_DIR,histogram_freq=0, write_graph=True, write_images=False)])
 
 
@@ -558,7 +557,7 @@ if __name__ == '__main__':
         class InferenceConfig(CustomConfig):
             # Set batch size to 1 since we'll be running inference on
             # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
-            GPU_COUNT = 1
+            GPU_COUNT = 4
             IMAGES_PER_GPU = 1
         config = InferenceConfig()
     config.display()
