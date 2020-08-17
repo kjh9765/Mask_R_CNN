@@ -27,7 +27,7 @@ class ParallelModel(KM.Model):
     outputs.
     """
 
-      def __init__(self, keras_model, gpu_count):
+    def __init__(self, keras_model, gpu_count):
         """Class constructor.
         keras_model: The Keras model to parallelize
         gpu_count: Number of GPUs. Must be > 1
